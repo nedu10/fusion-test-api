@@ -1,5 +1,5 @@
 {
-  "extends": "adonis-preset-ts/tsconfig.json",
+  "extends": "./node_modules/adonis-preset-ts/tsconfig",
   "include": [
     "**/*"
   ],
@@ -29,7 +29,8 @@
       "@adonisjs/core",
       "@adonisjs/repl",
       "@japa/preset-adonis/build/adonis-typings",
-      "@adonisjs/lucid"
+      "@adonisjs/lucid",
+      "@adonisjs/auth"
     ]
   }
 }

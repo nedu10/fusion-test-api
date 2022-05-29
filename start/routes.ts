@@ -19,7 +19,10 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
+import "./apiroutes/auth.route"
+import "./apiroutes/payment.route"
+import "./apiroutes/account.route"
 
 Route.get('/', async () => {
-  return { hello: 'world' }
+  return { hello: "Welcome to Fusion Technologies API" };
 })
