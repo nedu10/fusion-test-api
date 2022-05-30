@@ -11,18 +11,18 @@ export default class PaymentManagementsController {
             .status(createResponse?.status_code)
             .send(createResponse);
     }
-    // public async fetch_transactions({ response, auth }) {
-    //     let createResponse = await PaymentService.fetch_transactions(auth.user);
+    public async fetch_transactions({ response, auth }) {
+        let createResponse = await PaymentService.fetch_transactions(auth.user);
 
-    //     return response
-    //         .status(createResponse?.status_code)
-    //         .send(createResponse);
-    // }
-    // public async fetch_single_transaction({ response, auth, params: {transaction_id} }) {
-    //     let createResponse = await PaymentService.fetch_single_transaction(transaction_id, auth.user);
+        return response
+            .status(createResponse?.status_code)
+            .send(createResponse);
+    }
+    public async fetch_single_transaction({ response, auth, params: {transaction_id} }) {
+        let createResponse = await PaymentService.fetch_single_transaction(transaction_id, auth.user);
 
-    //     return response
-    //         .status(createResponse?.status_code)
-    //         .send(createResponse);
-    // }
+        return response
+            .status(createResponse?.status_code)
+            .send(createResponse);
+    }
 }

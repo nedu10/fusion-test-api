@@ -31,4 +31,6 @@ export default Env.rules({
 	MYSQL_DB_NAME: Env.schema.string(),
 
 	HASH_DRIVER: Env.schema.enum(['argon', 'bcrypt'] as const),
+	PAYSTACK_PUBLIC: Env.schema.string(),
+    PAYSTACK_SECRET: Env.schema.string(),
 })

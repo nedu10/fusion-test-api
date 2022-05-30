@@ -111,7 +111,6 @@
  
    static async verify_payment(reference: string) {
      try {
-       console.log("hrtrh");
  
        const verifyPaymentResponse: any = await axios.get(
          `${paystackConfig["verifyPaymentEndpoint"]}/${encodeURIComponent(
@@ -172,8 +171,6 @@
          }
        );
  
-       console.log("bankListResponse >> ", bankListResponse);
- 
        const { data: bank_list } = bankListResponse.data;
  
        return CreateOperationResponse({
@@ -216,8 +213,6 @@
        console.log("resolveAccountNumber >> ", resolveAccountNumber);
  
        const { data: resolve_account_number } = resolveAccountNumber.data;
- 
-       // console.log("resolve_account_number >> ", resolve_account_number);
  
        return CreateOperationResponse({
          results: resolve_account_number,

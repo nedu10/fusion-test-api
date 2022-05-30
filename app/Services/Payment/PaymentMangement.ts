@@ -140,132 +140,141 @@
        });
      }
    }
-//    static async fetch_transactions(user: User) {
-//      // console.log(user);
+   static async fetch_transactions(user: User) {
  
-//      try {
-//        const get_transactions = await Transaction.query().where(
-//          "user_id",
-//          user.id
-//        );
+        try {
+            const get_transactions = await Transaction.query().where(
+                "user_id",
+                user.id
+            );
+        
+            return CreateOperationResponse({
+                results: get_transactions,
+                status: "Success",
+                label: "Fetch transactions",
+                statusCode: 200,
+                message: `Successfully fetched transaction`,
+            });
+        } catch (error) {
+            // console.log(error);
+            return CreateOperationResponse({
+                error: error,
+                status: "Error",
+                statusCode: 500,
+                label: "Fetch transactions",
+                results: null,
+                message: `Error in processing fetch transaction`,
+            });
+        }
+   }
+   static async fetch_single_transaction(transaction_id: number, user: User) {
+        console.log(transaction_id, user.id);
+    
+        try {
+        const get_transactions = await Transaction.query()
+            .where("user_id", user.id)
+            .andWhere("id", transaction_id)
+            .first();
+
+        if (!get_transactions) {
+            return CreateOperationResponse({
+                error: { message: "Transaction Does Not Exist", status: "Failed" },
+                results: null,
+                label: `Fetch transaction`,
+                statusCode: 400,
+                message: `Unable to find this transaction`,
+            });
+        }
+    
+        return CreateOperationResponse({
+            results: get_transactions,
+            status: "Success",
+            label: "Fetch transactions",
+            statusCode: 200,
+            message: `Successfully fetched transaction`,
+        });
+        } catch (error) {
+        // console.log(error);
+        return CreateOperationResponse({
+            error: error,
+            status: "Error",
+            statusCode: 500,
+            label: "Fetch transactions",
+            results: null,
+            message: `Error in processing fetch transaction`,
+        });
+        }
+   }
+   static async webhook(request) {
+     try {
+       // console.log("request >> ", request.body());
  
-//        return CreateOperationResponse({
-//          results: get_transactions,
-//          status: "Success",
-//          label: "Fetch transactions",
-//          statusCode: 200,
-//          message: `Successfully fetched transaction`,
-//        });
-//      } catch (error) {
-//        // console.log(error);
-//        return CreateOperationResponse({
-//          error: error,
-//          status: "Error",
-//          statusCode: 500,
-//          label: "Fetch transactions",
-//          results: null,
-//          message: `Error in processing fetch transaction`,
-//        });
-//      }
-//    }
-//    static async fetch_single_transaction(transaction_id: number, user: User) {
-//      console.log(transaction_id, user.id);
+       const data = request.body();
  
-//      try {
-//        const get_transactions = await Transaction.query()
-//          .where("user_id", user.id)
-//          .andWhere("id", transaction_id)
-//          .first();
+       switch (data) {
+         case "charge.success":
+           const { data: event_data } = data;
+           const {
+             amount,
+             reasons,
+             reference,
+             status,
+             created_at,
+             updated_at,
+             transfer_code,
+             recipient: {
+               currency,
+               metadata,
+               name,
+               type,
+               recipient_code,
+               details,
+             },
+           } = event_data;
  
-//        return CreateOperationResponse({
-//          results: get_transactions,
-//          status: "Success",
-//          label: "Fetch transactions",
-//          statusCode: 200,
-//          message: `Successfully fetched transaction`,
-//        });
-//      } catch (error) {
-//        // console.log(error);
-//        return CreateOperationResponse({
-//          error: error,
-//          status: "Error",
-//          statusCode: 500,
-//          label: "Fetch transactions",
-//          results: null,
-//          message: `Error in processing fetch transaction`,
-//        });
-//      }
-//    }
-//    static async webhook(request) {
-//      try {
-//        // console.log("request >> ", request.body());
+           const trnx_payload = {
+             currency,
+             name,
+             type,
+             recipient_code,
+             transfer_code,
+             details,
+             updated_at,
+             created_at,
+             status,
+             reasons,
+           };
  
-//        const data = request.body();
+           const get_user_wallet = (await Wallet.query()
+             .where("user_id", metadata.user_id)
+             .first()) as Wallet;
  
-//        switch (data) {
-//          case "charge.success":
-//            const { data: event_data } = data;
-//            const {
-//              amount,
-//              reasons,
-//              reference,
-//              status,
-//              created_at,
-//              updated_at,
-//              transfer_code,
-//              recipient: {
-//                currency,
-//                metadata,
-//                name,
-//                type,
-//                recipient_code,
-//                details,
-//              },
-//            } = event_data;
+           get_user_wallet.amount = Number(get_user_wallet.amount) - Number(amount);
  
-//            const trnx_payload = {
-//              currency,
-//              name,
-//              type,
-//              recipient_code,
-//              transfer_code,
-//              details,
-//              updated_at,
-//              created_at,
-//              status,
-//              reasons,
-//            };
+           await get_user_wallet.save();
  
-//            const get_user_wallet = (await Wallet.query()
-//              .where("user_id", metadata.user_id)
-//              .first()) as Wallet;
+           await Transaction.create({
+             type: TransactionType.DEBIT,
+             amount,
+             reference,
+             entity: TransactionEntity.WALLETWITHDRAWALS,
+             status: TransactionStatus.SUCCESSFUL,
+             user_id: metadata.user_id,
+             payment_date: Date.now(),
+             payload: JSON.stringify(trnx_payload),
+           });
  
-//            get_user_wallet.amount = Number(get_user_wallet.amount) - Number(amount);
+           break;
+         // case "transfer.success":
+         //   // Webhook to check if transaction is not verified.
+         //   break;
  
-//            await get_user_wallet.save();
- 
-//            await Transaction.create({
-//              type: TransactionType.DEBIT,
-//              amount,
-//              reference,
-//              entity: TransactionEntity.WALLETWITHDRAWALS,
-//              status: TransactionStatus.SUCCESSFUL,
-//              user_id: metadata.user_id,
-//              payment_date: Date.now(),
-//              payload: JSON.stringify(trnx_payload),
-//            });
- 
-//            break;
-//          // case "transfer.success":
-//          //   // Webhook to check if transaction is not verified.
-//          //   break;
- 
-//          default:
-//            break;
-//        }
-//      } catch (error) {
-//        console.log(error);
-//      }
-//    }
+         default:
+           break;
+       }
+     } catch (error) {
+       console.log(error);
+     }
+   }
  }
  

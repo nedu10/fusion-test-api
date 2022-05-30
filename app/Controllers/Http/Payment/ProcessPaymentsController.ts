@@ -1,6 +1,7 @@
 // import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import PaymentService from "App/Services/Payment/PaymentMangement";
+import PaystackService from "App/Services/Payment/Paystack";
 import VerifyPaymentValidator from "App/Validators/VerifyPaymentValidator";
 
 export default class ProcessPaymentsController {
@@ -12,15 +13,15 @@ export default class ProcessPaymentsController {
             .status(createResponse?.status_code)
             .send(createResponse);
     }
-    // public async fetch_bank_list({ response }) {
-    //     let createResponse = await PaystackService.fetch_bank_list();
+    public async fetch_bank_list({ response }) {
+        let createResponse = await PaystackService.fetch_bank_list();
 
-    //     return response
-    //         .status(createResponse?.status_code)
-    //         .send(createResponse);
-    // }
-    // public async webhook({ request }) {
-    //     await PaymentService.webhook(request);
+        return response
+            .status(createResponse?.status_code)
+            .send(createResponse);
+    }
+    public async webhook({ request }) {
+        await PaymentService.webhook(request);
 
-    // }
+    }
 }
