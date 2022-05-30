@@ -7,6 +7,7 @@
 import Route from "@ioc:Adonis/Core/Route";
 
 Route.group(() => {
+  Route.get("/", "User/AuthController.profile");
   Route.post("/wallet-funding", "Account/WalletsController.wallet_funding");
   Route.post("/wallet-withdrawal", "Account/WalletsController.wallet_withdrawal");
   Route.post("/fund-transfer", "Account/WalletsController.wallet_transfer");

@@ -1,8 +1,9 @@
 import { DateTime } from 'luxon'
-import { afterCreate, BaseModel, beforeSave, column } from '@ioc:Adonis/Lucid/Orm'
+import { afterCreate, BaseModel, beforeSave, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
 
 import Hash from "@ioc:Adonis/Core/Hash";
 import WalletService from 'App/Services/Account/WalletManagement';
+import Wallet from './Wallet';
 
 
 export default class User extends BaseModel {
@@ -38,4 +39,10 @@ export default class User extends BaseModel {
   public static async createWallet(user: User) {
     WalletService.create_wallet({user_id: user.id})
   }
+
+  @hasOne(() => Wallet, {
+    localKey: "id",
+    foreignKey: "user_id",
+  })
+  public wallet: HasOne<typeof Wallet>;
 }
