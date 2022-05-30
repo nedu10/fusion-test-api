@@ -23,8 +23,6 @@
     //  console.log("auth >> ", auth);
  
      try {
-
-       console.log("email >> ", email)
        const get_user = await User.query().where("email", email).first();
  
        if (!get_user) {

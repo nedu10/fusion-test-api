@@ -273,14 +273,15 @@
    }
    static async transfer(recipient: string, amount: number) {
      try {
+       
        const transfer: any = await axios.post(
          `${paystackConfig["transferEndpoint"]}`,
          {
            source: "balance",
-           amount,
+           amount: amount * 100,
            recipient: recipient,
            reason: "Transfer",
-           
+          //  reference: get_ref
          },
          {
            headers: {
@@ -292,8 +293,6 @@
        console.log("transfer >> ", transfer);
  
        const { data: transfer_data } = transfer.data;
- 
-       // console.log("resolve_account_number >> ", resolve_account_number);
  
        return CreateOperationResponse({
          results: transfer_data,

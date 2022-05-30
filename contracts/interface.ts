@@ -18,6 +18,12 @@ export interface IWalletCredit {
   user_id: number,
   amount: number
 }
+export interface IDebit {
+  user_id: number,
+  amount: number,
+  reference: string,
+  payload?: any,
+}
 export interface IWalletTransfer {
   email: string,
   amount: number

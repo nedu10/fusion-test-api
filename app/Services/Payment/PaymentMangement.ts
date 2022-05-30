@@ -43,7 +43,7 @@
          reference
        );
  
-       console.log("process_verify_payment >> ", process_verify_payment);
+      //  console.log("process_verify_payment >> ", process_verify_payment);
  
        if (process_verify_payment.status_code != 200) {
          return process_verify_payment;
@@ -60,7 +60,6 @@
          // ip_address,
        } = process_verify_payment.results.data;
  
-       console.log("amount >> ", amount, reference, metadata);
  
        const payment_exists = await Transaction.query()
          .where("status", TransactionStatus.PENDING)
@@ -207,7 +206,7 @@
    }
    static async webhook(request) {
      try {
-       // console.log("request >> ", request.body());
+       console.log("request kdjsfjdnvekfjs.dv jsfldkcneks;dcn;ksd >> ", request.body());
  
        const data = request.body();
  
@@ -244,6 +243,13 @@
              status,
              reasons,
            };
+
+           await WalletService.debit({
+            reference,
+            amount: amount/100,
+            user_id: metadata.user_id,
+            payload: trnx_payload
+           })
  
            const get_user_wallet = (await Wallet.query()
              .where("user_id", metadata.user_id)
